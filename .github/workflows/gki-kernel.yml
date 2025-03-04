@@ -345,11 +345,12 @@ jobs:
           perl -pi -e 's{UTS_VERSION="\$\(echo \$UTS_VERSION \$CONFIG_FLAGS \$TIMESTAMP \| cut -b -\$UTS_LEN\)"}{UTS_VERSION="#1 SMP PREEMPT Sat Apr 20 04:20:00 UTC 2024"}' ./common/scripts/mkcompile_h
           
           echo "Building the kernel..."
+
           CUSTOM_VERSION="$CONFIG-${{ inputs.android_version }}-9-00019-g4ea09a298bb4-ab12292661"
 
           #sed -i '$s|echo "\$res"|echo "\$res-Wild+"|' ./common/scripts/setlocalversion
           # 替换内核版本 避免luna检测
-          sed -i "s|echo \"\$res\"|echo \"${{ $CUSTOM_VERSION }}\"|" ./common/scripts/setlocalversion
+          sed -i "s|echo \"\$res\"|echo \"$CUSTOM_VERSION\"|" ./common/scripts/setlocalversion
 
           if [ -f "build/build.sh" ]; then
             sed -i 's/-dirty//' ./common/scripts/setlocalversion
