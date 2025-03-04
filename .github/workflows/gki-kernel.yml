@@ -340,14 +340,17 @@ jobs:
         run: |
           echo "Changing to configuration directory: $CONFIG..."
 
-          cd "$CONFIG"          
-          sed -i '$s|echo "\$res"|echo "\$res'"$CUSTOM_VERSION"'"|' ./common/scripts/setlocalversion
+          cd "$CONFIG"
 
           perl -pi -e 's{UTS_VERSION="\$\(echo \$UTS_VERSION \$CONFIG_FLAGS \$TIMESTAMP \| cut -b -\$UTS_LEN\)"}{UTS_VERSION="#1 SMP PREEMPT Sat Apr 20 04:20:00 UTC 2024"}' ./common/scripts/mkcompile_h
           
           echo "Building the kernel..."
           CUSTOM_VERSION="$CONFIG-${{ inputs.android_version }}-9-00019-g4ea09a298bb4-ab12292661"
-          
+
+          #sed -i '$s|echo "\$res"|echo "\$res-Wild+"|' ./common/scripts/setlocalversion
+          # 替换内核版本 避免luna检测
+          sed -i "s|echo \"\$res\"|echo \"${{ $CUSTOM_VERSION }}\"|" ./common/scripts/setlocalversion
+
           if [ -f "build/build.sh" ]; then
             sed -i 's/-dirty//' ./common/scripts/setlocalversion
             #LTO=${{ inputs.lto_type }} BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh CC="/usr/bin/ccache clang"
@@ -359,7 +362,8 @@ jobs:
             echo "CONFIG_LOCALVERSION=\"$CUSTOM_VERSION\"" >> ./common/arch/arm64/configs/gki_defconfig
           fi
           # sed -i "s/^EXTRAVERSION.*/EXTRAVERSION = $CUSTOM_VERSION/" common/Makefile
-          echo "Final Kernel Version: $CUSTOM_VERSION"
+          
+          echo "Kernel Version: $CUSTOM_VERSION"
 
       - name: Build with retry
         uses: nick-fields/retry@v3
@@ -390,21 +394,6 @@ jobs:
           cp ./$CONFIG/out/${{ inputs.android_version }}-${{ inputs.kernel_version }}/dist/Image.lz4 ./bootimgs
           cp ./$CONFIG/out/${{ inputs.android_version }}-${{ inputs.kernel_version }}/dist/Image ./
           cp ./$CONFIG/out/${{ inputs.android_version }}-${{ inputs.kernel_version }}/dist/Image.lz4 ./
-
-          # Create gzip of the Image file
-          gzip -n -k -f -9 ./Image > ./Image.gz
-
-      - name: Create Bootimgs Folder and Copy Images
-        if: ${{ inputs.android_version == 'android14' || inputs.android_version == 'android15' }}
-        run: |
-          echo "Changing to configuration directory: $CONFIG..."
-          mkdir bootimgs
-
-          echo "Creating bootimgs folder and copying images..."
-          cp ./$CONFIG/bazel-bin/common/kernel_aarch64/Image ./bootimgs
-          cp ./$CONFIG/bazel-bin/common/kernel_aarch64/Image.lz4 ./bootimgs
-          cp ./$CONFIG/bazel-bin/common/kernel_aarch64/Image ./
-          cp ./$CONFIG/bazel-bin/common/kernel_aarch64/Image.lz4 ./
 
           # Create gzip of the Image file
           gzip -n -k -f -9 ./Image > ./Image.gz
@@ -513,3 +502,5 @@ jobs:
           path: |
             *.zip
             *.img
+
+
