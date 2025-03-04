@@ -360,7 +360,7 @@ jobs:
           echo "CONFIG_LOCALVERSION=\"$CUSTOM_VERSION\"" >> ./common/arch/arm64/configs/gki_defconfig
 
           sed -i "s/^EXTRAVERSION.*/EXTRAVERSION = $CUSTOM_VERSION/" common/Makefile
-
+          
           echo "Final Kernel Version: $CUSTOM_VERSION"
 
       - name: Build with retry
