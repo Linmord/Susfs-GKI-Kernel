@@ -343,7 +343,7 @@ jobs:
           cd "$CONFIG"          
           perl -pi -e 's{UTS_VERSION="\$\(echo \$UTS_VERSION \$CONFIG_FLAGS \$TIMESTAMP \| cut -b -\$UTS_LEN\)"}{UTS_VERSION="#1 SMP PREEMPT Sat Apr 20 04:20:00 UTC 2024"}' ./common/scripts/mkcompile_h
           
-          CUSTOM_VERSION="$CONFIG-${{ inputs.android_version }}-9-00019-g4ea09a298bb4-ab12292661"
+          CUSTOM_VERSION="-android12-9-00019-g4ea09a298bb4-ab12292661"
           sed -i "s|echo \"\$res\"|echo \"$CUSTOM_VERSION\"|" ./common/scripts/setlocalversion
           
           echo "Building the kernel..."
@@ -355,10 +355,10 @@ jobs:
             rm -rf ./common/android/abi_gki_protected_exports_*
             sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
             #tools/bazel build --config=fast --lto=${{ inputs.lto_type }} //common:kernel_aarch64_dist
-            echo "" >> common/arch/arm64/configs/gki_defconfig
-            echo "CONFIG_LOCALVERSION=\"$CUSTOM_VERSION\"" >> ./common/arch/arm64/configs/gki_defconfig
+            #echo "" >> common/arch/arm64/configs/gki_defconfig
+            #echo "CONFIG_LOCALVERSION=\"$CUSTOM_VERSION\"" >> ./common/arch/arm64/configs/gki_defconfig
           fi
-          # sed -i "s/^EXTRAVERSION.*/EXTRAVERSION = $CUSTOM_VERSION/" common/Makefile
+          #sed -i "s/^EXTRAVERSION.*/EXTRAVERSION = $CUSTOM_VERSION/" common/Makefile
           echo "Final Kernel Version: $CUSTOM_VERSION"
 
       - name: Build with retry
