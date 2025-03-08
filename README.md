@@ -57,8 +57,6 @@
 ---
 
 # 特别感谢以下人员的贡献！
-这对我帮助很大！<3
-
 [simonpunk](https://gitlab.com/simonpunk/susfs4ksu.git) - 创建了 SUSFS！
  [sidex15](https://github.com/sidex15) - 创建模块！
 [backslashxx](https://github.com/backslashxx) - 帮助打补丁！
